@@ -1,0 +1,5 @@
+|123240090|L|000000000000||10||000.000|cd "e:\CODINGAN RAIHAN\projek prak aplro\" ; if ($?) { g++ ProjekTerbaikSepanjangSejarah.cpp -o ProjekTerbaikSepanjangSejarah } ; if ($?) { .\ProjekTerbaikSepanjangSejarah }
+|2|l|12|Kawin|10000000|TK|efektif|jlseturan
+|123240090|L|018101919999|Kwin|10|000.000|efektif|jl babarsaari
+01.064.581.5-123.000|123240090|L|081808922637|Kawin|100000000|Tk|efektif|jl
+01.369.886.0-123.000|123240090|L|102020202020|kawin|100000000|K|efektif|jl
