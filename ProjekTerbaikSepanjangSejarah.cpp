@@ -7,7 +7,7 @@
 
 using namespace std;
 
-struct User {
+struct NPWPTempt {
     string npwp;
     string nik;
     string gender;
@@ -49,10 +49,14 @@ string generateFormattedNPWP(int jenisWP, int kodeKPP = 123, int status = 0 ) {
     return npwp.str();
 }
 
+void CheckNIK(string NIK){
+    
+}
+
 // Fungsi untuk menambah data
 void daftarUser() {
-    User u;
-    int pilihanJenis;
+    NPWPTempt User;
+    char pilihanJenis;
     int kodeJenisWP;
 
     cout << "=== PENDAFTARAN NPWP ===\n";
@@ -65,52 +69,53 @@ void daftarUser() {
     cin.ignore();
 
     cout << "Masukkan NIK                 : ";
-    getline(cin, u.nik);
+    getline(cin, User.nik);
+    CheckNIK(User.nik);
     cout << "Masukkan Jenis Kelamin (L/P): ";
-    getline(cin, u.gender);
+    getline(cin, User.gender);
     cout << "Masukkan No Telepon         : ";
-    getline(cin, u.noTelepon);
+    getline(cin, User.noTelepon);
     cout << "Status Kawin (Kawin/Lajang) : ";
-    getline(cin, u.statusKawin);
+    getline(cin, User.statusKawin);
     cout << "Jumlah Tanggungan           : ";
-    cin >> u.tanggungan;
+    cin >> User.tanggungan;
     cin.ignore();
     cout << "Status PTKP (TK/K)          : ";
-    getline(cin, u.statusPTKP);
+    getline(cin, User.statusPTKP);
     cout << "Status Wajib Pajak (Efektif/Non Efektif): ";
-    getline(cin, u.statusWajibPajak);
+    getline(cin, User.statusWajibPajak);
     cout << "Alamat                      : ";
-    getline(cin, u.alamat);
+    getline(cin, User.alamat);
 
     // Menentukan kode jenis WP berdasarkan pilihan
     switch (pilihanJenis) {
-        case 1: kodeJenisWP = 1 + rand() % 3; break; // 01–03
-        case 2: kodeJenisWP = 4 + rand() % 3; break; // 04–06
-        case 3: kodeJenisWP = 7 + rand() % 3; break; // 07–09
+        case '1': kodeJenisWP = 1 + rand() % 3; break; // 01–03
+        case '2': kodeJenisWP = 4 + rand() % 3; break; // 04–06
+        case '3': kodeJenisWP = 7 + rand() % 3; break; // 07–09
         default : kodeJenisWP = 0; break;
     }
 
     // generate NPWP nya
-    u.npwp = generateFormattedNPWP(kodeJenisWP);
+    User.npwp = generateFormattedNPWP(kodeJenisWP);
 
     // Menampilkan data yang telah dimasukkan
     cout << "\n=== DATA YANG TELAH DITAMBAHKAN ===\n";
-    cout << "NPWP: " << u.npwp << endl;
-    cout << "NIK: " << u.nik << endl;
-    cout << "Jenis Kelamin: " << u.gender << endl;
-    cout << "No Telepon: " << u.noTelepon << endl;
-    cout << "Status Kawin: " << u.statusKawin << endl;
-    cout << "Jumlah Tanggungan: " << u.tanggungan << endl;
-    cout << "Status PTKP: " << u.statusPTKP << endl;
-    cout << "Status Wajib Pajak: " << u.statusWajibPajak << endl;
-    cout << "Alamat: " << u.alamat << endl;
+    cout << "NPWP: " << User.npwp << endl;
+    cout << "NIK: " << User.nik << endl;
+    cout << "Jenis Kelamin: " << User.gender << endl;
+    cout << "No Telepon: " << User.noTelepon << endl;
+    cout << "Status Kawin: " << User.statusKawin << endl;
+    cout << "Jumlah Tanggungan: " << User.tanggungan << endl;
+    cout << "Status PTKP: " << User.statusPTKP << endl;
+    cout << "Status Wajib Pajak: " << User.statusWajibPajak << endl;
+    cout << "Alamat: " << User.alamat << endl;
 
     // Simpan data ke file
     ofstream file("npwp.txt", ios::app);
     if (file.is_open()) {
-        file << u.npwp << "|" << u.nik << "|" << u.gender << "|" << u.noTelepon << "|"
-             << u.statusKawin << "|" << u.tanggungan << "|" << u.statusPTKP << "|"
-             << u.statusWajibPajak << "|" << u.alamat << endl;
+        file << User.npwp << "|" << User.nik << "|" << User.gender << "|" << User.noTelepon << "|"
+             << User.statusKawin << "|" << User.tanggungan << "|" << User.statusPTKP << "|"
+             << User.statusWajibPajak << "|" << User.alamat << endl;
         file.close();
         cout << "\n✅ Data berhasil disimpan ke npwp.txt\n";
     } else {
