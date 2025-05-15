@@ -14,7 +14,7 @@
 using namespace std;
 
 struct NPWPTempt {
-    string NPWP;//1 more bit for null terminator 
+    string NPWP;
     string NIK;
     string Name;
     char gender;
@@ -25,6 +25,15 @@ struct NPWPTempt {
     bool statusWajibPajak;
     string alamat;
 };
+
+void clearScreen() {
+#ifdef _WIN32 // for Windows
+    system("cls");
+#elif defined(__linux__) // for Linux
+    cout << "\n";
+    system("clear");
+#endif
+}
 
 //visible buat nentuin brp banyak karakter yang ingin diperlihatkan
 //ShowLastW nentuin apakah karakter terakhir boleh terlihat
@@ -81,6 +90,21 @@ struct Admintempt{
 bool adminMode = false;
 
 
+void toLowercase(string *text){
+    string newtext = *text;
+    transform(newtext.begin(), newtext.end(), newtext.begin(), ::tolower);
+    *text = newtext;
+}
+
+string commatodot(string text){
+    string newtext = text;
+    for(int i = 0; i < text.length(); i ++){
+        if(text[i] == ',')
+            newtext[i] = '.';   
+    }
+    return newtext;
+}
+
 // Fungsi generate NPWP dengan format: AA.BBB.CCC.D-EEE.FFF
 string generateFormattedNPWP(int jenisWP, int kodeKPP = 123, int status = 0 ) {
     stringstream npwp;
@@ -113,7 +137,7 @@ string generateFormattedNPWP(int jenisWP, int kodeKPP = 123, int status = 0 ) {
 
 vector<NPWPTempt> pulldata(){ 
     vector<NPWPTempt> TempData;
-    ifstream file("npwp.txt");
+    ifstream file("./Data/NPWP.txt");
     string line;
 
     if (file.is_open()) {
@@ -193,15 +217,19 @@ void daftarUser() {
     cin >> pilihanJenis;
     cin.ignore();
 
-    cout << "Masukkan NIK: ";
-    getline(cin, User.NIK);
-    if(CheckNIK(User.NIK)){
-        cout << "NIK sudah terdaftar\nanda dapat melakukan pencarian data dengan NIK terkait" << endl;
-        return;
+    while(User.NIK.length() < 16){
+        cout << "Masukkan NIK: ";
+        getline(cin, User.NIK);
+        if(CheckNIK(User.NIK)){
+            cout << "NIK sudah terdaftar\nanda dapat melakukan pencarian data dengan NIK terkait" << endl;
+            return;
+        }
     }
 
-    cout << "Masukan Nama : ";
-    getline(cin, User.Name);
+    while(User.Name.length() == 0 ){
+        cout << "Masukan Nama : ";
+        getline(cin, User.Name);
+    }
 
     do{
         cout << "Masukkan Jenis Kelamin (L/P): ";
@@ -214,15 +242,13 @@ void daftarUser() {
     User.gender = toupper(User.gender); //change char to uppercase
 
     
-    do{
+    while(User.noTelepon.length() < 12 || User.noTelepon.length() > 13);{
         cout << "Masukkan No Telepon (12)      : ";
         cin >> User.noTelepon;
         cin.ignore();
     }
-    while(User.noTelepon.length() < 12 || User.noTelepon.length() > 13);
 
-    char tempK;
-    
+    char tempK;    
     do{
         cout << "Kawin(K) / Lajang(L): ";
         cin >> tempK;
@@ -237,10 +263,10 @@ void daftarUser() {
     User.tanggungan = (User.tanggungan > 3)? 3 : User.tanggungan;
 
     if(User.statusKawin){
-        User.PTKP = "K-" + to_string(User.tanggungan);
+        User.PTKP = "K" + to_string(User.tanggungan);
     }
     else{
-        User.PTKP = "TK-" + to_string(User.tanggungan);
+        User.PTKP = "TK" + to_string(User.tanggungan);
     }
 
     long int NilaiPTKP = PTKPtoValue(User.PTKP);
@@ -252,7 +278,8 @@ void daftarUser() {
     
     cout << "Alamat                      : ";
     getline(cin, User.alamat);
-    
+    User.alamat = commatodot(User.alamat);
+
     // Menentukan kode jenis WP berdasarkan pilihan
     switch (pilihanJenis) {
         case '1': kodeJenisWP = 1 + rand() % 3; break; // 01–03
@@ -277,7 +304,7 @@ void daftarUser() {
     cout << "Alamat: " << User.alamat << endl;
 
     // Simpan data ke file
-    ofstream file("npwp.txt", ios::app);
+    ofstream file("./Data/NPWP.txt", ios::app);
     if (file.is_open()) {
         file << User.NPWP << ',' << User.NIK << ',' << User.Name << ',' << User.gender << ',' << User.noTelepon << ','
              << User.statusKawin << ',' << User.tanggungan << ',' << User.PTKP << ','
@@ -302,20 +329,25 @@ void caridata(){
     NPWPTempt SearchData;
     char option;
     bool found = false;
-    cout << Data[0].Name << endl;
+    clearScreen();
+    cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
     cout << "Cari data berdasar" << endl;
     cout << "1.Nama" << endl;
     cout << "2.NPWP" << endl;
     cout << "3.NIK" << endl;
+    cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+    cout << "Masukan Opsi : ";
     cin >> option;
     cin.ignore();
-    
+    cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
     switch (option)
     {
         case '1':
-        cout << "Masukan Nama anda : " << endl;
+        cout << "\nMasukan Nama anda : ";
         getline(cin, SearchData.Name);
+        toLowercase(&SearchData.Name);
         for(size_t i = 0; i < Data.size(); ++i){
+            toLowercase(&Data[i].Name);
             if(Data[i].Name == SearchData.Name){
                 found = true;
                 index = i;
@@ -324,7 +356,7 @@ void caridata(){
         }
         break;
     case '2':
-        cout << "Masukan NPWP anda : " << endl;
+        cout << "Masukan NPWP anda : ";
         getline(cin, SearchData.NPWP);
         for(size_t i = 0; i < Data.size(); ++i){
             if(Data[i].NPWP == SearchData.NPWP){
@@ -335,7 +367,7 @@ void caridata(){
         }
         break;
     case '3':
-        cout << "Masukan NIK anda : " << endl;
+        cout << "Masukan NIK anda : ";
         getline(cin, SearchData.NIK);
         for(size_t i = 0; i < Data.size(); ++i){
             if(Data[i].NIK == SearchData.NIK){
@@ -350,27 +382,30 @@ void caridata(){
     }
     
     if(found){
+        clearScreen();
         cout << setfill('=') << setw(60) << "" << setfill(' ') << endl;
-        cout << " NPWP             : " << Data[index].NPWP << endl;
-        cout << " NIK              : " << Data[index].NIK << endl;
-        cout << " Name             : " << Data[index].Name << endl;
-        cout << " gender           : " << Data[index].gender << endl;
-        cout << " noTelepon        : " << Data[index].noTelepon << endl;
-        cout << " statusKawin      : " << booltostring(Data[index].statusKawin) << endl;
-        cout << " tanggungan       : " << Data[index].tanggungan << endl;
-        cout << " PTKP             : " << Data[index].PTKP << endl;
-        cout << " statusWajibPajak : " << booltostring(Data[index].statusWajibPajak) << endl;
-        cout << " alamat           : " << Data[index].alamat << endl;
+        cout << " NPWP               : " << Data[index].NPWP << endl;
+        cout << " NIK                : " << Data[index].NIK << endl;
+        cout << " Name               : " << Data[index].Name << endl;
+        cout << " gender             : " << Data[index].gender << endl;
+        cout << " noTelepon          : " << Data[index].noTelepon << endl;
+        cout << " statusKawin        : " << booltostring(Data[index].statusKawin) << endl;
+        cout << " tanggungan         : " << Data[index].tanggungan << endl;
+        cout << " PTKP               : " << Data[index].PTKP << endl;
+        cout << " status Wajib Pajak : " << booltostring(Data[index].statusWajibPajak) << endl;
+        cout << " alamat             : " << Data[index].alamat << endl;
         cout << setfill('=') << setw(60) << "" << setfill(' ') << endl;
     }else{
         cout << "Data tidak ditemukan" << endl;
     }
+    cout << "press any key to continue..";
+    getchar();
 }
 
 // Fungsi untuk melihat data yang sudah ada
 void lihatData() {
-    system("cls");
-    ifstream file("npwp.txt");
+    clearScreen();
+    ifstream file("./Data/NPWP.txt");
     string line;
 
     cout << "\n==== DAFTAR DATA NPWP ====\n";
@@ -385,15 +420,16 @@ void lihatData() {
 
             while (getline(ss, field, ',')) {
                 switch (fieldNo) {
-                    case 1: cout << "NPWP: " << field << endl; break;
-                    case 2: cout << "NIK: " << field << endl; break;
-                    case 3: cout << "Jenis Kelamin: " << field << endl; break;
-                    case 4: cout << "No Telepon: " << field << endl; break;
-                    case 5: cout << "Status Kawin: " << field << endl; break;
-                    case 6: cout << "Jumlah Tanggungan: " << field << endl; break;
-                    case 7: cout << "Status PTKP: " << field << endl; break;
-                    case 8: cout << "Status Wajib Pajak: " << field << endl; break;
-                    case 9: cout << "Alamat: " << field << endl; break;
+                    case 1: cout << "NPWP               : " << field << endl; break;
+                    case 2: cout << "NIK                : " << field << endl; break;
+                    case 3: cout << "Nama               : " << field << endl; break;
+                    case 4: cout << "Jenis Kelamin      : " << field << endl; break;
+                    case 5: cout << "No Telepon         : " << field << endl; break;
+                    case 6: cout << "Status Kawin       : " << field << endl; break;
+                    case 7: cout << "Jumlah Tanggungan  : " << field << endl; break;
+                    case 8: cout << "Status PTKP        : " << field << endl; break;
+                    case 9: cout << "Status Wajib Pajak : " << field << endl; break;
+                    case 10: cout <<"Alamat             : " << field << endl; break;
                 }
                 fieldNo++;
             }
@@ -409,12 +445,14 @@ void lihatData() {
 void MenuNPWP(){
     char pilihan = ' ';
     while(pilihan != '3'){
-        system("cls");
+        clearScreen();
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
         cout << "Pilih Menu:\n";
         cout << "1. Tambah Data NPWP\n";
         cout << "2. Lihat Data NPWP\n";
         cout << "3. kembali ke menu utama\n";
-        cout << "Pilihan (1-2): ";
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "Pilihan (1-3): ";
         cin >> pilihan;
         cin.ignore();
         switch (pilihan) {
@@ -443,43 +481,52 @@ bool LoginAdmin(){
     cout << "Password\t: "; tempPassword = maskedInput();;
 
     for(int i = 0; i < 2; i++){
-
         if(tempUsername == admin[i].username && tempPassword == admin[i].password) {
             cout << "SELAMAT DATANG " << admin[i].name;
             adminMode = true;
             return adminMode;
         }
-
-
     }
-
     adminMode = false;
 }
 
 int main() {
-    system("cls");
     srand(time(0)); // supaya rand() beda tiap jalan
     char pilihan;
     //#admin mode
-    cout << "Pilih Menu:\n";
-    cout << "1. Daftar atau Cek NPWP\n";
-    cout << "2. Bayar Pajak\n";
-    cout << "Pilihan (1-2): ";
-    cin >> pilihan;
-
-    switch (pilihan) {
-        case '#':
-            LoginAdmin();
-        case '1':
-            MenuNPWP();
-            break;
-        case '2':
-            break;
-        default:
-            cout << "Pilihan tidak valid!\n";
-            break;
+    
+    while(pilihan != '3'){
+        clearScreen();
+        lihatData();
+        cout << endl;
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "Pilih Menu:\n";
+        cout << "1. Daftar atau Cek NPWP\n";
+        cout << "2. Bayar Pajak\n";
+        cout << "3. Keluar Program\n";
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "Pilihan (1-3) : ";
+        cin >> pilihan;
+        cin.ignore();
+        
+        switch (pilihan) {
+            case '#':
+                LoginAdmin();
+            case '1':
+                MenuNPWP();
+                break;
+            case '2':
+                break;
+            case '3':
+                cout << "press key to confirm....";
+                getchar();
+                return 0;
+                break;
+            default:
+                cout << "Pilihan tidak valid!\n";
+                cout << "press any button to continue"; getchar();
+                break;
+        }
     }
-
     return 0;
-
 }
