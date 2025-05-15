@@ -5,6 +5,9 @@
 #include <sstream>
 #include <ctime>
 #include <cstdlib>
+#include <algorithm> 
+#include <conio.h>
+#include <cctype>
 #include <vector>
 #include <iomanip>
 
@@ -22,6 +25,61 @@ struct NPWPTempt {
     bool statusWajibPajak;
     string alamat;
 };
+
+//visible buat nentuin brp banyak karakter yang ingin diperlihatkan
+//ShowLastW nentuin apakah karakter terakhir boleh terlihat
+string maskedInput(bool ShowLastW = false, int visible = 0, char maskChar = '*') {
+    string input; 
+    char ch; // ini char yang di pake cuman buat nyimpen
+
+    while (true) {
+        ch = _getch();
+
+        // Enter = ASCII 13(teken enter loop berakhir)
+        if (ch == 13) {
+            cout << endl;
+            break;
+        }
+
+        // Backspace = ASCII 8/ disini spasi bakal ke tutup juga(kecuali dia blm masukin apa apa)
+        if (ch == 8 && !input.empty()) {
+            input.pop_back();
+            cout << "\b \b";
+        }
+
+        // isprint itu buar karakter yang ditampilin jadi spasi gak bakal ke input
+        else if (isprint(ch)) {
+            input.push_back(ch); // ch itu karakter, jadi push_back bakal masukin karakter ke input
+
+            if (ShowLastW) {
+                // untuk nentuin berapa banyak karak yg gak boleh terlihat
+                if ((int)input.size() <= (int)input.size() - visible)
+                    cout << maskChar;
+                else {
+                    // Tampilkan karakter terakhir
+                    cout << ch;
+                }
+            } else {
+                // jadi disini bakal ketutupan semua sama *
+                cout << maskChar;
+            }
+        }
+    }
+
+    return input;
+}
+
+
+struct Admintempt{
+    string name;
+    string username;
+    string password;
+}; Admintempt admin[2] = {
+    {"RAIHAN","raihan", "admin123"}
+};
+
+bool adminMode = false;
+
 
 // Fungsi generate NPWP dengan format: AA.BBB.CCC.D-EEE.FFF
 string generateFormattedNPWP(int jenisWP, int kodeKPP = 123, int status = 0 ) {
@@ -378,27 +436,51 @@ void MenuNPWP(){
     }
 }
 
+bool LoginAdmin(){
+    string tempUsername,tempPassword;
+    cout << "====== LOGIN ADMIN ======\n"
+         << "\nUsername\t: "; cin >> tempUsername;
+    cout << "Password\t: "; tempPassword = maskedInput();;
+
+    for(int i = 0; i < 2; i++){
+
+        if(tempUsername == admin[i].username && tempPassword == admin[i].password) {
+            cout << "SELAMAT DATANG " << admin[i].name;
+            adminMode = true;
+            return adminMode;
+        }
+
+
+    }
+
+    adminMode = false;
+}
+
 int main() {
     system("cls");
     srand(time(0)); // supaya rand() beda tiap jalan
     char pilihan;
+    //#admin mode
     cout << "Pilih Menu:\n";
-    cout << "1. Daftar atau Cek NPWP\n";
-    cout << "2. Bayar Pajak\n";
-    cout << "3. Admin\n";
+    cout << "1. Tambah Data NPWP\n";
+    cout << "2. Lihat Data NPWP\n";
     cout << "Pilihan (1-2): ";
     cin >> pilihan;
 
     switch (pilihan) {
+        case '#':
+            LoginAdmin();
         case '1':
-            MenuNPWP();
+            daftarUser();
             break;
         case '2':
-            break;
-        case '3':
+            lihatData();
             break;
         default:
             cout << "Pilihan tidak valid!\n";
             break;
     }
-}  
+
+    return 0;
+
+}
