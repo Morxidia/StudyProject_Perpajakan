@@ -1,5 +1,5 @@
 #include <iostream>
-    #include <fstream>
+#include <fstream>
 #include <string>
 #include <string.h>
 #include <sstream>
@@ -22,21 +22,9 @@ struct NPWPTempt {
 };
 
 main(){
-    NPWPTempt User;
+    system("cls");
+    ifstream file("npwp.txt");
     string line;
-    ifstream myfile ("npwp.txt");
 
-    if (myfile.is_open())
-    {
-    myfile  >> User.NPWP >> User.NIK >> User.Name
-                    >> User.gender >> User.noTelepon >> User.statusKawin
-                    >> User.tanggungan >> User.PTKP >> User.statusWajibPajak 
-                    >> User.alamat;
-                    myfile.close();
-            }
-            
-    else cout << "Unable to open file"; 
-            
-    cout << User.NPWP << endl;
-    return 0;
+    cout << (true)? "aktif" : "tidak aktif" << endl;
 }
