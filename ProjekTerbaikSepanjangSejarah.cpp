@@ -188,14 +188,14 @@ bool CheckNIK(string NIK){
 
 
 long int PTKPtoValue(string PTKP){
-    if(PTKP == "TK-0") return 54000000;
-    else if(PTKP == "TK-1") return 58500000;
-    else if(PTKP == "TK-2") return 63000000;
-    else if(PTKP == "TK-3") return 67500000;
-    else if(PTKP == "K-0") return 58500000;
-    else if(PTKP == "K-1") return 63000000;
-    else if(PTKP == "K-2") return 67500000;
-    else if(PTKP == "K-3") return 72000000;
+    if(PTKP == "TK0") return 54000000;
+    else if(PTKP == "TK1") return 58500000;
+    else if(PTKP == "TK2") return 63000000;
+    else if(PTKP == "TK3") return 67500000;
+    else if(PTKP == "K0") return 58500000;
+    else if(PTKP == "K1") return 63000000;
+    else if(PTKP == "K2") return 67500000;
+    else if(PTKP == "K3") return 72000000;
     else{
         cout << "Error PTKP can't be classified" << endl;
         return 0;
@@ -221,7 +221,9 @@ void daftarUser() {
         cout << "Masukkan NIK: ";
         getline(cin, User.NIK);
         if(CheckNIK(User.NIK)){
-            cout << "NIK sudah terdaftar\nanda dapat melakukan pencarian data dengan NIK terkait" << endl;
+            cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+            cout << "NIK sudah terdaftar\nanda dapat melakukan pencarian data dengan NIK terkait\npress enter to continue...";
+            getchar();
             return;
         }
     }
@@ -241,12 +243,13 @@ void daftarUser() {
     } while ((User.gender != 'L' && User.gender != 'P') && (User.gender != 'l' && User.gender != 'p'));
     User.gender = toupper(User.gender); //change char to uppercase
 
-    
-    while(User.noTelepon.length() < 12 || User.noTelepon.length() > 13);{
-        cout << "Masukkan No Telepon (12)      : ";
+    do
+    {
+        cout << "Masukkan No Telepon (12 digit)      : ";
         cin >> User.noTelepon;
         cin.ignore();
-    }
+    } while (User.noTelepon.length() < 12);
+    
 
     char tempK;    
     do{
@@ -293,8 +296,10 @@ void daftarUser() {
     
     // Menampilkan data yang telah dimasukkan
     cout << "\n=== DATA YANG TELAH DITAMBAHKAN ===" << endl;
+    clearScreen();
     cout << "NPWP: " << User.NPWP << endl;
     cout << "NIK: " << User.NIK << endl;
+    cout << "NIK: " << User.Name << endl;
     cout << "Jenis Kelamin: " << User.gender << endl;
     cout << "No Telepon: " << User.noTelepon << endl;
     cout << "Status Kawin: " << boolalpha << User.statusKawin << endl;
@@ -302,6 +307,7 @@ void daftarUser() {
     cout << "Status PTKP: " << User.PTKP << endl;
     cout << "Status Wajib Pajak: " << boolalpha << User.statusWajibPajak << endl;
     cout << "Alamat: " << User.alamat << endl;
+    cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
 
     // Simpan data ke file
     ofstream file("./Data/NPWP.txt", ios::app);
@@ -310,17 +316,20 @@ void daftarUser() {
              << User.statusKawin << ',' << User.tanggungan << ',' << User.PTKP << ','
              << User.statusWajibPajak << ',' << User.alamat << endl;
         file.close();
-        cout << "\n✅ Data berhasil disimpan ke npwp.txt\n";
+        cout << "\nData berhasil disimpan\n";
     } else {
-        cout << "\n❌ Gagal menyimpan data ke file.\n";
+        cout << "\nGagal menyimpan data.\n";
     }
+    cout << "press any key to continue....";
+    getchar();
 }
-
-
-//menarik data dari txt ke dalam variable
 
 string booltostring(bool cond){
     return (cond)? "aktif" : "tidak aktif";
+}
+
+string gendertostring(char text){
+    return (text == 'L')? "Laki-laki" : "Perempuan";
 }
 
 void caridata(){
@@ -387,7 +396,7 @@ void caridata(){
         cout << " NPWP               : " << Data[index].NPWP << endl;
         cout << " NIK                : " << Data[index].NIK << endl;
         cout << " Name               : " << Data[index].Name << endl;
-        cout << " gender             : " << Data[index].gender << endl;
+        cout << " gender             : " << gendertostring(Data[index].gender) << endl;
         cout << " noTelepon          : " << Data[index].noTelepon << endl;
         cout << " statusKawin        : " << booltostring(Data[index].statusKawin) << endl;
         cout << " tanggungan         : " << Data[index].tanggungan << endl;
@@ -497,7 +506,6 @@ int main() {
     
     while(pilihan != '3'){
         clearScreen();
-        cout << endl;
         cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
         cout << "Pilih Menu:\n";
         cout << "1. Daftar atau Cek NPWP\n";
