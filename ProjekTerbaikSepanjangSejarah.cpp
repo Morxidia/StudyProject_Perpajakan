@@ -462,8 +462,8 @@ int main() {
     char pilihan;
     //#admin mode
     cout << "Pilih Menu:\n";
-    cout << "1. Tambah Data NPWP\n";
-    cout << "2. Lihat Data NPWP\n";
+    cout << "1. Daftar atau Cek NPWP\n";
+    cout << "2. Bayar Pajak\n";
     cout << "Pilihan (1-2): ";
     cin >> pilihan;
 
@@ -471,10 +471,9 @@ int main() {
         case '#':
             LoginAdmin();
         case '1':
-            daftarUser();
+            MenuNPWP();
             break;
         case '2':
-            lihatData();
             break;
         default:
             cout << "Pilihan tidak valid!\n";
