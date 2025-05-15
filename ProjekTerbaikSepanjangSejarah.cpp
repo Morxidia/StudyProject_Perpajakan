@@ -497,7 +497,6 @@ int main() {
     
     while(pilihan != '3'){
         clearScreen();
-        lihatData();
         cout << endl;
         cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
         cout << "Pilih Menu:\n";
