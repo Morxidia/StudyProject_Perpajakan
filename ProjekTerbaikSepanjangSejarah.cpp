@@ -169,7 +169,7 @@ vector<NPWPTempt> pulldata(){
         }
         file.close();
     } else {
-        cout << "❌ Gagal membuka file.\n";
+        cout << "Gagal membuka file.\n";
         return TempData;
     }
     
@@ -447,7 +447,7 @@ void lihatData() {
         }
         file.close();
     } else {
-        cout << "❌ Gagal membuka file.\n";
+        cout << " Gagal membuka file.\n";
     }
 }
 
