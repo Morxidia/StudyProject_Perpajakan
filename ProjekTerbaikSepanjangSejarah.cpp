@@ -555,37 +555,7 @@ void lihatData() {
     }
 }
 
-void MenuNPWP(){
-    char pilihan = ' ';
-    while(pilihan != '3'){
-        clearScreen();
-        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
-        cout << "Pilih Menu:\n";
-        cout << "1. Tambah Data NPWP\n";
-        cout << "2. Lihat Data NPWP\n";
-        cout << "3. kembali ke menu utama\n";
-        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
-        cout << "Pilihan (1-3): ";
-        cin >> pilihan;
-        cin.ignore();
-        switch (pilihan) {
-            case '1':
-                daftarUser();
-                break;
-            case '2':
-                caridata();
-                break;
-            case '3':
-                return;
-                break;
-            default:
-                cout << "Pilihan tidak valid!" << endl;
-                cout << "press any button to continue";
-                getchar();
-            break;
-        }
-    }
-}
+
 
 bool taxPaymentHistory(){
 
@@ -613,7 +583,7 @@ float taxtoperc(unsigned long long int income){
         return 0.35;
 }
 
-void menuPajak(){   
+void taxPaymentRegistration(){   
     TaxForm userTaxForm;
     NPWPTempt UserNPWP;
     string tempNP;
@@ -853,19 +823,80 @@ bool LoginAdmin(){
     adminMode = false;
 }
 
+void taxMenu(){
+    char pilihan = ' ';
+    while(pilihan != '3'){
+        clearScreen();
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "Pilih Menu:\n";
+        cout << "1. Registrasi pembayaran pajak tahunan\n";
+        cout << "2. Lihat Histori Pembayaran pajak\n";
+        cout << "3. kembali ke menu utama\n";
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "Pilihan (1-3): ";
+        cin >> pilihan;
+        cin.ignore();
+        switch (pilihan) {
+            case '1':
+                taxPaymentRegistration();
+                break;
+            case '2':
+                break;
+            case '3':
+                return;
+                break;
+            default:
+                cout << "Pilihan tidak valid!" << endl;
+                cout << "press any button to continue";
+                getchar();
+            break;
+        }
+    }
+}
+
+void MenuNPWP(){
+    char pilihan = ' ';
+    while(pilihan != '3'){
+        clearScreen();
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "Pilih Menu:\n";
+        cout << "1. Tambah Data NPWP\n";
+        cout << "2. Lihat Data NPWP\n";
+        cout << "3. kembali ke menu utama\n";
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "Pilihan (1-3): ";
+        cin >> pilihan;
+        cin.ignore();
+        switch (pilihan) {
+            case '1':
+                daftarUser();
+                break;
+            case '2':
+                caridata();
+                break;
+            case '3':
+                return;
+                break;
+            default:
+                cout << "Pilihan tidak valid!" << endl;
+                cout << "press any button to continue";
+                getchar();
+            break;
+        }
+    }
+}
+
 int main() {
     srand(time(0)); // supaya rand() beda tiap jalan
     char pilihan;
     //#admin mode
-    menuPajak();
-    return 0;
     
     while(pilihan != '3'){
         clearScreen();
         cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
         cout << "Pilih Menu:\n";
         cout << "1. Daftar atau Cek NPWP\n";
-        cout << "2. Bayar Pajak\n";
+        cout << "2. Menu pajak\n";
         cout << "3. Keluar Program\n";
         cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
         cout << "Pilihan (1-3) : ";
@@ -879,6 +910,7 @@ int main() {
                 MenuNPWP();
                 break;
             case '2':
+                taxMenu();
                 break;
             case '3':
                 cout << "press key to confirm....";
