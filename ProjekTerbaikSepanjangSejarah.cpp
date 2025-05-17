@@ -30,6 +30,7 @@ struct TaxForm
 {
     string NPWP;
     string NIK;
+    string Name;
     char gender;
     string paymentYear;
     string salary;
@@ -636,9 +637,15 @@ void taxPaymentRegistration(){
                 cout << "press any key to continue..."; getchar();
                 return;
             }
-            userTaxForm.NPWP = "00.000.000.0-000.000";
         }
+        userTaxForm.NIK = UserNPWP.NIK;
+        
+        cout << "Masukkan Nama: ";
+        getline(cin, userTaxForm.Name);
 
+
+        userTaxForm.NPWP = "00.000.000.0-000.000";
+        
         char statuskawin;    
         do{
             cout << "Kawin(K) / Lajang(L): ";
@@ -682,6 +689,10 @@ void taxPaymentRegistration(){
         
         userTaxForm.gender = UserNPWP.gender;
         cout << "gender\t\t\t\t: " << userTaxForm.gender << endl;
+        
+        userTaxForm.Name = UserNPWP.Name;
+        cout << "Nama\t\t\t\t: " << userTaxForm.Name << endl;
+        
 
         addTaxPerc = 1.0;
     }
