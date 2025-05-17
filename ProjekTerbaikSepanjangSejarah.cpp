@@ -245,37 +245,53 @@ vector<NPWPTempt> pullNPWP(){
     return TempData;
 }
 
-// vector<TaxForm> pullTaxHistory(){
-//     vector<TaxForm> TempData;
-//     ifstream file("./Data/TaxPaymentHistory.txt.txt");
-//     string line;
+vector<TaxForm> pullTaxHistory(){
+    vector<TaxForm> TempData;
+    ifstream file("./Data/TaxPaymentHistory.txt");
+    string line;
 
-//     if (file.is_open()) {
-//         int indx = 0;
-//         while (getline(file, line)) {
-//             stringstream ss(line);
-//             string field;
-//             int fieldNo = 1;
-//             NPWPTempt Temp;
+    if (file.is_open()) {
+        int indx = 0;
+        while (getline(file, line)) {
+            stringstream ss(line);
+            string field;
+            int fieldNo = 1;
+            TaxForm Temp;
 
-//             //getting the string until ','
-//             while (getline(ss, field, ',')) {
-//                 switch (fieldNo) {
-//                     case 1: Temp.NPWP = field; break;
-//                 }
-//                 fieldNo++;
-//             }
-//             indx++;
-//             TempData.push_back(Temp);
-//         }
-//         file.close();
-//     } else {
-//         cout << "Gagal membuka file.\n";
-//         return TempData;
-//     }
+            //getting the string until ','
+            while (getline(ss, field, ',')) {
+                switch (fieldNo) {
+                    case 1: Temp.NPWP = field; break;
+                    case 2: Temp.NIK = field; break;
+                    case 3: Temp.Name = field; break;
+                    case 4: Temp.gender = field.at(0); break;
+                    case 5: Temp.paymentYear = field; break;
+                    case 6: Temp.salary = field; break;
+                    case 7: Temp.additionalIncome = field; break;
+                    case 8: Temp.allowance = field; break;
+                    case 9: Temp.honorium = field; break;
+                    case 10: Temp.totalIncome = field; break;
+                    case 11: Temp.positionExpanse = field; break;
+                    case 12: Temp.pension = field; break;
+                    case 13: Temp.netIncome = field; break;
+                    case 14: Temp.PTKP = field; break;
+                    case 15: Temp.taxIncome = field; break;
+                    case 16: Temp.percTax = field; break;
+                    case 17: Temp.taxTotal = field; break;
+                }
+                fieldNo++;
+            }
+            indx++;
+            TempData.push_back(Temp);
+        }
+        file.close();
+    } else {
+        cout << "Gagal membuka file.\n";
+        return TempData;
+    }
     
-//     return TempData;
-// }
+    return TempData;
+}
 
 int CheckNIK(string NIK){
     vector<NPWPTempt> Data = pullNPWP();
@@ -556,10 +572,13 @@ void lihatData() {
     }
 }
 
-
-
-bool taxPaymentHistory(){
-
+int taxPaymentHistory(string NIK, string yearPayment){
+    vector<TaxForm> taxHistory = pullTaxHistory();
+    for(size_t i = 0; i < taxHistory.size(); ++i){
+        if((taxHistory[i].NIK == NIK) && taxHistory[i].paymentYear == yearPayment)
+            return i;
+    }
+    return -1;
 }
 
 NPWPTempt pullNPWPfromNPWP(string NPWP){
@@ -582,6 +601,80 @@ float taxtoperc(unsigned long long int income){
         return 0.30;
     else
         return 0.35;
+}
+
+void taxHistorybyNPWP(string NPWP){
+    vector<TaxForm> taxHistory = pullTaxHistory();
+    int consoleWidth = 40;
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+    for(size_t i = 0; i < taxHistory.size(); ++i){
+        if(taxHistory[i].NPWP == NPWP){
+            cout << "Nama\t\t\t: " << taxHistory[i].Name << endl;
+            cout << "Tahun pembayaran\t: " << taxHistory[i].paymentYear << endl;
+            cout << "Total yang dibayarkan\t: " << addThousandSeparators(taxHistory[i].taxTotal) << endl;
+            cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+        }
+    }
+    return ;
+}
+
+void taxHistorybyNIK(string NIK){
+    vector<TaxForm> taxHistory = pullTaxHistory();
+    int consoleWidth = 40;
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+    for(size_t i = 0; i < taxHistory.size(); ++i){
+        if(taxHistory[i].NIK == NIK){
+            cout << "Nama\t\t\t: " << taxHistory[i].Name << endl;
+            cout << "Tahun pembayaran\t: " << taxHistory[i].paymentYear << endl;
+            cout << "Total yang dibayarkan\t: " << addThousandSeparators(taxHistory[i].taxTotal) << endl;
+            cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+        }
+    }
+    return ;
+}
+
+void taxSearchMenu(){
+    char userOption;
+    string NPWP;
+    string NIK;
+    int consoleWidth = 40;
+    string header = "Pencarian Histori Pembayaran Pajak";
+    int headPadding = (consoleWidth - header.length())/2;
+    clearScreen();
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+    cout << setw(headPadding + header.length()) << right << header  << endl;
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+    cout << "Masukan opsi untuk melakukan pencarian histori pembayaran pajak" << endl;
+    cout << "1.Cari menggunakan NPWP" << endl;
+    cout << "2.Cari menggunakan NIK" << endl;
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+    cout << "masukan Opsi anda : ";
+    cin >> userOption;
+    cin.ignore();
+
+    switch (userOption)
+    {
+    case '1':
+        clearScreen();
+        cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+        cout << "Masukan NPWP anda\t: ";
+        getline(cin, NPWP);
+        taxHistorybyNPWP(NPWP);
+        cout << "press any key to continue....";
+        getchar();
+        break;
+        case '2':
+        clearScreen();
+        cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+        cout << "Masukan NIK anda\t: ";
+        getline(cin, NIK);
+        taxHistorybyNIK(NIK);
+        cout << "press any key to continue....";
+        getchar();
+        break;
+    default:
+        break;
+    }
 }
 
 void taxPaymentRegistration(){   
@@ -698,10 +791,30 @@ void taxPaymentRegistration(){
     }
 
 
-    cout << "Masukan Tahun pembayaran\t: ";
+    cout << "Masukan Tahun pembayaran\t: 20";
     getline(cin, userTaxForm.paymentYear);
+    userTaxForm.paymentYear = "20" + userTaxForm.paymentYear;
 
-    //check data if payment has already exist
+    int checkHistoryIndex = taxPaymentHistory(userTaxForm.NIK, userTaxForm.paymentYear);
+    if(checkHistoryIndex != -1){
+        clearScreen();
+        vector<TaxForm> taxHistory = pullTaxHistory();
+        TaxForm userData = taxHistory[checkHistoryIndex];
+        cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+        cout << "anda sudah melakukan pembayaraan pada tahun tersebut" << endl;
+        cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+        cout << "berikut adalah histori dari pembayaran anda" << endl;
+        cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+        cout << "NIK\t\t\t: " << userData.NIK << endl;
+        cout << "Name\t\t\t: " << userData.Name << endl;
+        cout << "Net Income\t\t: " << addThousandSeparators(userData.netIncome) << endl;
+        cout << "Taxable Income\t\t: " << addThousandSeparators(userData.taxIncome) << endl;
+        cout << "Tax total\t\t: " << addThousandSeparators(userData.taxTotal) << endl;
+        cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+        cout << "press any key to continue...";
+        getchar();
+        return;
+    }
 
     cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
     int timesIncome;
@@ -726,21 +839,16 @@ void taxPaymentRegistration(){
         }
     }while((userOption != '2') && (userOption != '1'));
     string incomeTime = (userOption == '1')? "tahun" : "bulan";
-    cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
-
+    
     unsigned long int ptkpValue = PTKPtoValue(UserNPWP.PTKP);//menarik nilai PTKP
     
-    cout << "\nSilahkan masukan pemasukan dan pengeluaran anda dalam se-" << incomeTime << endl << endl;
     cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+    cout << "Silahkan masukan pemasukan anda dalam se-" << incomeTime << endl;
+    cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+
     userTaxForm.salary = numSeparatorInput("Masukan Gaji anda\t\t: ");
     unsigned long long int tempSalary = stoll(userTaxForm.salary);
     tempSalary = tempSalary * timesIncome;
-    if(tempSalary < ptkpValue){
-        clearScreen();
-        cout << "gaji anda lebih kecil daripada nilai PTKP, anda tidak diwajibkan membayar pajak" << endl;
-        cout << "silahkan menekan tombol apa saja untuk keluar..."; getchar();
-        return;
-    }
     userTaxForm.salary = to_string(tempSalary);
     
     userTaxForm.additionalIncome = numSeparatorInput("Masukan penghasilan lain anda\t: "); 
@@ -761,7 +869,18 @@ void taxPaymentRegistration(){
     unsigned long long int totalIncome = tempSalary + tempAdditionalIncome + tempAllowance + tempHonorium;
     userTaxForm.totalIncome = to_string(totalIncome);
     
-    userTaxForm.positionExpanse = numSeparatorInput("Masukan tunjangan jabatan anda\t: ");
+    if(totalIncome < ptkpValue){
+        clearScreen();
+        cout << "Penghasilan anda lebih kecil daripada nilai PTKP, anda tidak diwajibkan membayar pajak" << endl;
+        cout << "silahkan menekan tombol apa saja untuk keluar..."; getchar();
+        return;
+    }
+
+    cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+    cout << "Silahkan masukan Pengeluaran anda dalam se-" << incomeTime << endl;
+    cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
+
+    userTaxForm.positionExpanse = numSeparatorInput("Masukan biaya jabatan anda\t: ");
     unsigned long long int tempPositionExpanse = stoll(userTaxForm.positionExpanse);
     tempPositionExpanse = tempPositionExpanse * timesIncome;
     userTaxForm.positionExpanse = to_string(tempPositionExpanse);
@@ -777,17 +896,17 @@ void taxPaymentRegistration(){
 
     userTaxForm.netIncome = to_string(netIncome);
 
-    cout << "Net income anda\t\t\t: " << userTaxForm.netIncome << endl;
+    cout << "Net income anda\t\t\t: " << addThousandSeparators(userTaxForm.netIncome) << endl;
 
     //nilai PTKP sudah di tarik
     cout << "PTKP anda\t\t\t: " << UserNPWP.PTKP << endl;
-    cout << "Nilai PTKP anda\t\t\t: " << ptkpValue << endl;
+    cout << "Nilai PTKP anda\t\t\t: " << addThousandSeparators(to_string(ptkpValue)) << endl;
     userTaxForm.PTKP = UserNPWP.PTKP;
 
     unsigned long long int taxableIncome = netIncome - ptkpValue;
 
     userTaxForm.taxIncome = to_string(taxableIncome);
-    cout << "Pengahsilan wajib pajak anda\t: " << userTaxForm.taxIncome << endl;
+    cout << "Pengahsilan wajib pajak anda\t: " << addThousandSeparators( userTaxForm.taxIncome) << endl;
 
     float taxperc = taxtoperc(taxableIncome);
     taxperc = taxperc * addTaxPerc;
@@ -798,16 +917,16 @@ void taxPaymentRegistration(){
     
     unsigned long long int taxOut = taxableIncome * taxperc;
     userTaxForm.taxTotal = to_string(taxOut);
-    cout << "Total Pajak yang harus dibayar\t: " << userTaxForm.taxTotal << endl;
+    cout << "Total Pajak yang harus dibayar\t: " << addThousandSeparators(userTaxForm.taxTotal) << endl;
     cout << setfill('-') << setw(outputWidth) << "" << setfill(' ') << endl;
 
     ofstream file("./Data/TaxPaymentHistory.txt", ios::app);
     if(file.is_open()){
-        file << userTaxForm.NPWP << ',' << userTaxForm.NIK << ',' << userTaxForm.gender << ','
+        file << userTaxForm.NPWP << ',' << userTaxForm.NIK << ',' << userTaxForm.Name << ',' << userTaxForm.gender << ','
              << userTaxForm.paymentYear << ',' << userTaxForm.salary << ',' << userTaxForm.additionalIncome << ','
              << userTaxForm.allowance << ',' << userTaxForm.honorium << ',' << userTaxForm.totalIncome << ','
              << userTaxForm.positionExpanse << ',' << userTaxForm.pension << ',' << userTaxForm.netIncome << ','
-             << userTaxForm.PTKP << ',' << userTaxForm.taxIncome << ',' << userTaxForm.percTax << ',' << userTaxForm.totalIncome;
+             << userTaxForm.PTKP << ',' << userTaxForm.taxIncome << ',' << userTaxForm.percTax << ',' << userTaxForm.taxTotal << endl;
         file.close();
         cout << "\nData berhasil disimpan" << endl;
     }else {
@@ -852,6 +971,7 @@ void taxMenu(){
                 taxPaymentRegistration();
                 break;
             case '2':
+                taxSearchMenu();
                 break;
             case '3':
                 return;
@@ -901,7 +1021,6 @@ int main() {
     srand(time(0)); // supaya rand() beda tiap jalan
     char pilihan;
     //#admin mode
-    
     while(pilihan != '3'){
         clearScreen();
         cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
