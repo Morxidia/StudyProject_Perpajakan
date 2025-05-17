@@ -644,7 +644,8 @@ void taxSearchMenu(){
     cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
     cout << setw(headPadding + header.length()) << right << header  << endl;
     cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
-    cout << "Masukan opsi untuk melakukan pencarian histori pembayaran pajak" << endl;
+    cout << "Masukan opsi untuk melakukan pencarian\nhistori pembayaran pajak" << endl;
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
     cout << "1.Cari menggunakan NPWP" << endl;
     cout << "2.Cari menggunakan NIK" << endl;
     cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
