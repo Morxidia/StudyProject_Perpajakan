@@ -340,13 +340,24 @@ long int PTKPtoValue(string PTKP){
     }
 }
 
+bool isNumber(string &text){
+    for(char c : text){
+        if(!isdigit(c)){
+            return false;
+        }
+    }
+    return !text.empty();
+}
+
 // Fungsi untuk menambah data
 void daftarUser() {
     NPWPTempt User;
     char pilihanJenis;
     int kodeJenisWP;
+    int consoleWidth = 50;
 
-    cout << "=== PENDAFTARAN NPWP ===" << endl;
+    clearScreen();
+    cout << "=================== PENDAFTARAN NPWP ===================" << endl;
     cout << "Pilih Jenis Wajib Pajak:" << endl;
     cout << "1. WP Pekerja Bebas/profesional (Dokter, Notaris, dll)" << endl;
     cout << "2. WP Orang Pribadi (Pengusaha)" << endl;
@@ -356,24 +367,27 @@ void daftarUser() {
     cin.ignore();
 
     int nikminlen = 16;
-    while(User.NIK.length() < nikminlen){
-        cout << "Masukkan NIK: ";
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+    do
+    {
+        cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+        cout << "Masukkan NIK\t\t\t: ";
         getline(cin, User.NIK);
         if((CheckNIK(User.NIK) != -1)){
-            cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
-            cout << "NIK sudah terdaftar\nanda dapat melakukan pencarian data dengan NIK terkait\npress enter to continue...";
+            clearScreen();
+            cout << "NIK '" << User.NIK << "' sudah terdaftar\nanda dapat melakukan pencarian data dengan NIK terkait\npress enter to continue...";
             getchar();
             return;
         }
-    }
+    } while ((User.NIK.length() < nikminlen) || !(isNumber(User.NIK)));
 
     while(User.Name.length() == 0 ){
-        cout << "Masukan Nama : ";
+        cout << "Masukan Nama\t\t\t: ";
         getline(cin, User.Name);
     }
 
     do{
-        cout << "Masukkan Jenis Kelamin (L/P): ";
+        cout << "Masukkan Jenis Kelamin (L/P)\t: ";
         cin >> User.gender;
         cin.ignore();
         if((User.gender != 'L' && User.gender != 'P') && (User.gender != 'l' && User.gender != 'p')){
@@ -385,7 +399,7 @@ void daftarUser() {
     int telplen = 12;
     do
     {
-        cout << "Masukkan No Telepon (12 digit)      : ";
+        cout << "Masukkan No Telepon (12 digit)\t: ";
         cin >> User.noTelepon;
         cin.ignore();
     } while (User.noTelepon.length() < telplen);
@@ -393,7 +407,7 @@ void daftarUser() {
 
     char statuskawin;    
     do{
-        cout << "Kawin(K) / Lajang(L): ";
+        cout << "Kawin(K) / Lajang(L)\t\t: ";
         cin >> statuskawin;
         cin.ignore();
     }
@@ -401,7 +415,7 @@ void daftarUser() {
     User.statusKawin = (statuskawin == 'k' || statuskawin == 'K')? true : false;
 
     int makstanggungan;
-    cout << "Jumlah Tanggungan (maks 3): ";
+    cout << "Jumlah Tanggungan (maks 3)\t: ";
     cin >> User.tanggungan;
     cin.ignore();
     User.tanggungan = (User.tanggungan > makstanggungan)? makstanggungan : User.tanggungan;
@@ -414,13 +428,11 @@ void daftarUser() {
     }
 
     long int NilaiPTKP = PTKPtoValue(User.PTKP);
-    long int currentsalary;
-    cout << "Masukan Gaji anda saat ini : ";
-    cin >> currentsalary;
-    cin.ignore();
-    User.statusWajibPajak = (currentsalary > NilaiPTKP)? true: false;
+    string currentsalary;
+    currentsalary = numSeparatorInput("Masukan gaji anda saat ini\t: ");
+    User.statusWajibPajak = (stoll(currentsalary) > NilaiPTKP)? true: false;
     
-    cout << "Alamat                      : ";
+    cout << "Alamat\t\t\t: ";
     getline(cin, User.alamat);
     User.alamat = commaToDot(User.alamat);
 
@@ -438,17 +450,18 @@ void daftarUser() {
     // Menampilkan data yang telah dimasukkan
     cout << "\n=== DATA YANG TELAH DITAMBAHKAN ===" << endl;
     clearScreen();
-    cout << "NPWP: " << User.NPWP << endl;
-    cout << "NIK: " << User.NIK << endl;
-    cout << "NIK: " << User.Name << endl;
-    cout << "Jenis Kelamin: " << User.gender << endl;
-    cout << "No Telepon: " << User.noTelepon << endl;
-    cout << "Status Kawin: " << boolalpha << User.statusKawin << endl;
-    cout << "Jumlah Tanggungan: " << User.tanggungan << endl;
-    cout << "Status PTKP: " << User.PTKP << endl;
-    cout << "Status Wajib Pajak: " << boolalpha << User.statusWajibPajak << endl;
-    cout << "Alamat: " << User.alamat << endl;
-    cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
+    cout << "NPWP\t\t\t: " << User.NPWP << endl;
+    cout << "NIK\t\t\t: " << User.NIK << endl;
+    cout << "NIK\t\t\t: " << User.Name << endl;
+    cout << "Jenis Kelamin\t\t: " << User.gender << endl;
+    cout << "No Telepon\t\t: " << User.noTelepon << endl;
+    cout << "Status Kawin\t\t: " << boolalpha << User.statusKawin << endl;
+    cout << "Jumlah Tanggungan\t: " << User.tanggungan << endl;
+    cout << "Status PTKP\t\t: " << User.PTKP << endl;
+    cout << "Status Wajib Pajak\t\t: " << boolalpha << User.statusWajibPajak << endl;
+    cout << "Alamat\t\t\t: " << User.alamat << endl;
+    cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
 
     // Simpan data ke file
     ofstream file("./Data/NPWP.txt", ios::app);
@@ -530,6 +543,7 @@ void caridata(){
     }
     cout << "press any key to continue..";
     getchar();
+    return;
 }
 
 // Fungsi untuk melihat data yang sudah ada
@@ -605,7 +619,7 @@ float taxtoperc(unsigned long long int income){
 
 void taxHistorybyNPWP(string NPWP){
     vector<TaxForm> taxHistory = pullTaxHistory();
-    int consoleWidth = 40;
+    int consoleWidth = 50;
     cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
     for(size_t i = 0; i < taxHistory.size(); ++i){
         if(taxHistory[i].NPWP == NPWP){
@@ -620,7 +634,7 @@ void taxHistorybyNPWP(string NPWP){
 
 void taxHistorybyNIK(string NIK){
     vector<TaxForm> taxHistory = pullTaxHistory();
-    int consoleWidth = 40;
+    int consoleWidth = 50;
     cout << setfill('-') << setw(consoleWidth) << "" << setfill(' ') << endl;
     for(size_t i = 0; i < taxHistory.size(); ++i){
         if(taxHistory[i].NIK == NIK){
@@ -637,7 +651,7 @@ void taxSearchMenu(){
     char userOption;
     string NPWP;
     string NIK;
-    int consoleWidth = 40;
+    int consoleWidth = 50;
     string header = "Pencarian Histori Pembayaran Pajak";
     int headPadding = (consoleWidth - header.length())/2;
     clearScreen();
@@ -890,6 +904,10 @@ void taxPaymentRegistration(){
     unsigned long long int tempPension = stoll(userTaxForm.pension);
     tempPension = tempPension * timesIncome;
     userTaxForm.pension = to_string(tempPension);
+    
+    cout << setfill('=') << setw(outputWidth) << "" << setfill(' ') << endl;
+    cout << "Pehitungan pajak berdasarkan pemasukan dan pengeluaran anda" << endl;
+    cout << setfill('=') << setw(outputWidth) << "" << setfill(' ') << endl;
 
     //gross income and net income calculation
     unsigned long long int totalExpanse = tempPositionExpanse + tempPension;
