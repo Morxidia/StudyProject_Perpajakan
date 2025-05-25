@@ -149,14 +149,14 @@ string maskedInput(bool ShowLastW = false, int visible = 0, char maskChar = '*')
 
 
 struct Admintempt{
-    string name;
-    string username;
-    string password;
-}; Admintempt admin[2] = {
-    {"RAIHAN","raihan", "admin123"}
+    char name[50];
+    char username[50];
+    char password[50];
 };
-
 bool adminMode = false;
+string u, n;
+
+
 
 
 void toLowercase(string *text){
@@ -953,23 +953,6 @@ void taxPaymentRegistration(){
     getchar();
 }
 
-bool LoginAdmin(){
-    string tempUsername,tempPassword;
-    clearScreen();
-    cout << "====== LOGIN ADMIN ======" << endl;
-    cout << "Username\t: "; cin >> tempUsername;
-    cout << "Password\t: "; tempPassword = maskedInput();;
-
-    for(int i = 0; i < 2; i++){
-        if(tempUsername == admin[i].username && tempPassword == admin[i].password) {
-            cout << "SELAMAT DATANG " << admin[i].name;
-            adminMode = true;
-            return adminMode;
-        }
-    }
-    adminMode = false;
-}
-
 void taxMenu(){
     char pilihan = ' ';
     while(pilihan != '3'){
@@ -1034,10 +1017,402 @@ void MenuNPWP(){
     }
 }
 
+/*
+A
+D
+M
+I
+N
+*/
+
+vector<Admintempt> adminlist;
+
+
+void saveAdminList() {
+    ofstream file("./Data/Admin.dat", ios::binary);
+    if (!file.is_open()) {
+        cout << "Gagal membuka file Admin.dat untuk menyimpan.\n";
+        return;
+    }
+
+for (size_t i = 0; i < adminlist.size(); ++i) {
+    const Admintempt &admin = adminlist[i];
+    file.write(reinterpret_cast<const char*>(&admin), sizeof(Admintempt));
+}
+
+    file.close();
+}
+
+
+vector<Admintempt> loadDadmin() {
+    vector<Admintempt> temp;
+   ifstream file("./Data/Admin.dat", ios::binary);
+    if (!file.is_open()) return temp;
+
+    Admintempt admin;
+
+    // Selama bisa membaca 1 struct penuh dari file
+    while (file.read(reinterpret_cast<char*>(&admin), sizeof(Admintempt))) {
+        temp.push_back(admin);
+    }
+
+    file.close();
+    return temp;
+}
+
+void addAdmin() {
+    clearScreen();
+    Admintempt admin;
+    string temp;
+
+    cout << "Tambah Admin Baru\n";
+
+
+    while (true) {
+        cout << "Nama\t\t: ";
+        cin.getline(admin.name, 50);
+
+        bool name = false;
+        for (size_t i = 0; i < adminlist.size(); i++) {
+            if (adminlist[i].name == admin.name) {
+                name = true;
+                break;
+            }
+        }
+
+        if (name) {
+            cout << "Nama sudah digunakan, silakan masukkan nama lain.\n";
+        } else {
+            break;
+        }
+    }
+
+
+    while (true) {
+        cout << "Username(4 char)\t: ";
+        getline(cin, temp);
+        toLowercase(&temp);   // jadikan lowercase
+        strncpy(admin.username, temp.c_str(), sizeof(admin.username) - 1);
+        admin.username[sizeof(admin.username) - 1] = '\0';
+
+        if (strlen(admin.username) < 4) {
+            cout << "Username terlalu pendek, coba lagi.\n";
+            continue;
+        }
+
+        bool username = false;
+        for (size_t i = 0; i < adminlist.size(); i++) {
+            if (adminlist[i].username == admin.username) {
+                username = true;
+                break;
+            }
+        }
+
+        if (username) {
+            cout << "Username sudah digunakan, silakan masukkan username lain.\n";
+        } else {
+            break;
+        }
+    }
+
+
+while (true) {
+    cout << "Password\t\t: ";
+    string pass = maskedInput();
+
+    if (pass.length() < 8) {
+        cout << "Password terlalu pendek, coba lagi.\n";
+    } else {
+        strncpy(admin.password, pass.c_str(), sizeof(admin.password) - 1);
+        admin.password[sizeof(admin.password) - 1] = '\0'; 
+        break;
+    }
+}
+    // Tambah admin baru ke list
+    adminlist.push_back(admin);
+    saveAdminList();
+
+    cout << "Admin berhasil ditambahkan.\n";
+    getchar();
+}
+
+void deleteAdmin() {
+    clearScreen();
+    string username;
+    cout << "Masukkan username admin yang ingin dihapus: ";
+    getline(cin, username);
+    
+    bool found = false;
+    int index = -1;
+    
+    // Cari index admin yang username-nya sama dengan input user
+    for (int i = 0; i < adminlist.size(); ++i) {
+        if (adminlist[i].username == username) {
+            found = true;
+            index = i;
+            break;  // langsung keluar loop setelah ketemu
+        }
+    }
+
+
+
+    if (found) {
+        string deletedName = adminlist[index].name;
+        string deletedUsername = adminlist[index].username;
+
+        adminlist.erase(adminlist.begin() + index);
+
+        cout << "Admin\t\t: \nNama\t\t: " << deletedName
+            << "\nUsername\t: " << deletedUsername << " berhasil dihapus.\n";
+
+        // Simpan perubahan ke file
+        saveAdminList();
+        getchar();
+    } else {
+        cout << "Admin dengan username '" << username << "' tidak ditemukan.\n";
+        getchar();
+    }
+}
+
+void forgetPassword(){
+    string inputuser, inputname, newPass;
+    int index = -1;
+    bool found = false;
+    clearScreen();
+    
+    cout << "Username\t: "; cin >> inputuser;
+    cout << "Name\t: "; cin >> inputname;
+    
+    for (size_t i = 0; i < adminlist.size(); i++){
+        if (inputuser == adminlist[i].username && inputname == adminlist[i].name){
+            found = true;
+            index = i;
+            break;
+        }
+    }
+    
+    if(found){
+        cout << "Verifikasi berhasil !!";
+        getchar();
+        
+        cout << "Masukan Password baru\t: "; newPass = maskedInput();
+        string temppass = newPass;
+        while (true){
+            cout << "konfirmasi Password baru\t: "; newPass = maskedInput();
+                
+            if(newPass != temppass){
+                cout << "Password baru tidak sesuai !!";
+                getchar();
+            } else {
+                break;
+            }
+        
+
+        }
+        strncpy(adminlist[index].password, newPass.c_str(), sizeof(adminlist[index].password) - 1);
+        adminlist[index].password[sizeof(adminlist[index].password) - 1] = '\0';
+    
+        saveAdminList();
+        cout << "Password berhasil diganti !! ";
+    }else {
+        cout << "Data tidak cocok. Reset gagal.\n";
+        getchar();
+    }
+
+    cout << "Tekan enter untuk lanjut...";
+    getchar();
+
+}
+
+void UpdateAdmin() {
+    clearScreen();
+string username, password;
+cout << "Pastikan ini anda " << n << endl;
+cout << "Username\t: ";
+cin >> username;
+
+bool found = false;
+int index = -1;
+
+for (int i = 0; i < adminlist.size(); i++) {
+    if (adminlist[i].username == username && u == username) {
+        cout << "Password\t: ";
+        password = maskedInput();
+
+        if (adminlist[i].password == password) {
+            found = true;
+            index = i;
+        } else {
+            cout << "Password salah!\n";
+            return;
+        }
+        break; 
+    } 
+
+    else if (adminlist[i].username == username && u != username) {
+        cout << "Anda hanya boleh mengubah akun anda sendiri\n";
+        return;
+    }
+}
+
+if (!found) {
+    cout << "Admin tidak ditemukan atau password salah.\n";
+    return;
+}
+
+    string newName, newUser, newPass;
+
+    cout << "Nama Baru\t: ";
+    getline(cin, newName);
+    for (int i = 0; i < adminlist.size(); ++i) {
+    if (i != index && adminlist[i].username == newUser) {
+        cout << "Username baru sudah digunakan admin lain.\n";
+        return;
+    }
+}
+    cout << "Username Baru\t: ";
+    getline(cin, newUser);
+    cout << "Password Baru\t: ";
+    newPass = maskedInput();
+
+    strncpy(adminlist[index].name, newName.c_str(), sizeof(adminlist[index].name) - 1);
+    strncpy(adminlist[index].username, newUser.c_str(), sizeof(adminlist[index].username) - 1);
+    strncpy(adminlist[index].password, newPass.c_str(), sizeof(adminlist[index].password) - 1);
+
+    adminlist[index].name[sizeof(adminlist[index].name) - 1] = '\0';
+    adminlist[index].username[sizeof(adminlist[index].username) - 1] = '\0';
+    adminlist[index].password[sizeof(adminlist[index].password) - 1] = '\0';
+
+    saveAdminList();
+    cout << "Admin berhasil diperbarui!\n";
+    getchar();
+}
+
+bool LoginAdmin() {
+    clearScreen();
+    int tries = 3;
+    string inputuser, inputpass;
+
+    while (tries > 0) {
+        clearScreen();
+        int index;
+        cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
+        cout << "====== LOGIN ADMIN ======" << endl;
+        cout << "Ketik '#' pada kolom Username jika lupa password.\n";
+        cout << "Username\t: ";
+        getline(cin, inputuser);
+        if(inputuser == "#"){
+            forgetPassword();
+            return false;
+        }
+        cout << "Password\t: ";
+        inputpass = maskedInput();
+
+        bool found = false;
+        for (size_t i = 0; i < adminlist.size(); i++) {
+            if (inputuser == adminlist[i].username && inputpass == adminlist[i].password) {
+                found = true;
+                index = i;
+                break;
+            }
+        }
+
+        if (found) {
+            cout << "\nLogin berhasil. Selamat datang Admin " << adminlist[index].name << "!" << endl;
+            u = inputuser;
+            n = adminlist[index].name;
+            adminMode = true;
+            getchar();
+            return true;
+        } else {
+            tries--;
+            cout << "\nLogin gagal. Sisa percobaan: " << tries << endl;
+            if (tries > 0) {
+                cout << "Tekan Enter untuk mencoba lagi...";
+                cin.ignore();
+                getchar();
+            }
+        }
+    }
+
+    cout << "\nLogin gagal berkali-kali. JANGAN NGAKU ADMIN !!.\n";
+    getchar();
+    return false;
+}
+
+void AkunAdmin() {
+    char pilihan;
+    do {
+        clearScreen();
+        cout << setfill('=') << setw(40) << "" << setfill(' ') << endl;
+        cout << "         MENU AKUN ADMIN\n";
+        cout << setfill('=') << setw(40) << "" << setfill(' ') << endl;
+        cout << "1. Tambah Admin\n";
+        cout << "2. Ubah Data Admin\n";
+        cout << "3. Hapus Admin\n";
+        cout << "4. Kembali ke Menu Utama\n";
+        cout << setfill('-') << setw(40) << "" << setfill(' ') << endl;
+        cout << "Pilih opsi (1-4): ";
+        cin >> pilihan;
+        cin.ignore();
+
+        switch (pilihan) {
+            case '1':
+                addAdmin();
+                break;
+            case '2':
+                UpdateAdmin();
+                break;
+            case '3':
+                deleteAdmin();
+                break;
+            case '4':
+                return;
+            default:
+                cout << "Opsi tidak valid. Tekan Enter untuk lanjut...";
+                getchar();
+                break;
+        }
+    } while (pilihan != '4');
+}
+
+
+void adminMenu() {
+    char choice;
+    do {
+        clearScreen();
+        cout << "\n=== MENU ADMIN ===" << endl;
+        cout << "1. Akun admin Menu" << endl;
+        cout << "0. Logout" << endl;
+        cout << "Pilihan: "; cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+            case '1':
+                AkunAdmin();
+                break;
+            case '2':
+
+            case '0':
+                adminMode = false;
+                cout << "Logout berhasil.\n";
+                return;
+
+            default:
+                cout << "Pilihan tidak valid.\n";
+        }
+    } while (true);
+}
+
+
+
 int main() {
     srand(time(0)); // supaya rand() beda tiap jalan
     char pilihan;
+    adminlist = loadDadmin();
     //#admin mode
+    addAdmin();
+    
     while(pilihan != '3'){
         clearScreen();
         cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
@@ -1052,7 +1427,9 @@ int main() {
         
         switch (pilihan) {
             case '#':
-                LoginAdmin();
+                if(LoginAdmin())
+                    adminMenu();
+                break;
             case '1':
                 MenuNPWP();
                 break;
