@@ -251,7 +251,6 @@ vector<TaxForm> pullTaxHistory(){
     string line;
 
     if (file.is_open()) {
-        int indx = 0;
         while (getline(file, line)) {
             stringstream ss(line);
             string field;
@@ -281,7 +280,6 @@ vector<TaxForm> pullTaxHistory(){
                 }
                 fieldNo++;
             }
-            indx++;
             TempData.push_back(Temp);
         }
         file.close();
