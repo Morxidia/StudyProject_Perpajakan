@@ -10,6 +10,7 @@
 #include <cctype>
 #include <vector>
 #include <iomanip>
+#include <limits>
 
 using namespace std;
 
@@ -40,7 +41,7 @@ struct TaxForm
     string totalIncome;
     string positionExpanse;
     string pension;
-    string netIncome;
+    string netIncome;   
     string PTKP;
     string taxIncome;
     string percTax;
@@ -1182,22 +1183,31 @@ void forgetPassword(){
     bool found = false;
     clearScreen();
     
-    cout << "Username\t: "; cin >> inputuser;
-    cout << "Name\t: "; cin >> inputname;
+    cout << "Username\t\t\t: "; cin >> inputuser;
+    cin.ignore();
+    cout << "Name\t\t\t\t: "; 
+    getline(cin, inputname);
+
     
-    for (size_t i = 0; i < adminlist.size(); i++){
-        if (inputuser == adminlist[i].username && inputname == adminlist[i].name){
+    
+    toLowercase(&inputname);
+    
+    for (size_t i = 0; i < adminlist.size(); i++) {
+        string name = adminlist[i].name;    
+        toLowercase(&name);                
+        if (inputuser == adminlist[i].username && inputname == name) {
             found = true;
             index = i;
             break;
         }
     }
-    
+        
+
     if(found){
-        cout << "Verifikasi berhasil !!";
+        cout << "\nVerifikasi berhasil !!\n";
         getchar();
         
-        cout << "Masukan Password baru\t: "; newPass = maskedInput();
+        cout << "Masukan Password baru\t\t: "; newPass = maskedInput();
         string temppass = newPass;
         while (true){
             cout << "konfirmasi Password baru\t: "; newPass = maskedInput();
@@ -1227,7 +1237,7 @@ void forgetPassword(){
 }
 
 void UpdateAdmin() {
-    clearScreen();
+clearScreen();
 string username, password;
 cout << "Pastikan ini anda " << n << endl;
 cout << "Username\t: ";
@@ -1303,6 +1313,7 @@ bool LoginAdmin() {
         cout << "Ketik '#' pada kolom Username jika lupa password.\n";
         cout << "Username\t: ";
         getline(cin, inputuser);
+        toLowercase(&inputuser);
         if(inputuser == "#"){
             forgetPassword();
             return false;
@@ -1378,6 +1389,93 @@ void AkunAdmin() {
     } while (pilihan != '4');
 }
 
+void swap(NPWPTempt &a, NPWPTempt &b) {
+    NPWPTempt temp = a;
+    a = b;
+    b = temp;
+}
+
+int partition(vector<NPWPTempt> &data, int low, int high, const string &key) {
+    string pivot;
+    if (key == "nik") pivot = data[high].NIK;
+    else if (key == "npwp") pivot = data[high].NPWP;
+    else pivot = data[high].Name;
+
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        string current;
+        if (key == "nik") current = data[j].NIK;
+        else if (key == "npwp") current = data[j].NPWP;
+        else current = data[j].Name;
+
+        if (current <= pivot) {
+            i++;
+            swap(data[i], data[j]);
+        }
+    }
+    swap(data[i + 1], data[high]);
+    return i + 1;
+}
+
+void quickSortNPWP(vector<NPWPTempt> &data, int low, int high, const string &key) {
+    if (low < high) {
+        int pi = partition(data, low, high, key);
+        quickSortNPWP(data, low, pi - 1, key);
+        quickSortNPWP(data, pi + 1, high, key);
+    }
+}
+
+
+
+
+void lihatsemuadata(vector<NPWPTempt> &data) {
+    int perPage = 10;
+    clearScreen();
+    for (int i = 0; i < data.size(); ++i) {
+        cout << "No. " << i + 1 << "\n";
+        cout << "Nama           : " << data[i].Name << "\n";
+        cout << "NPWP           : " << data[i].NPWP << "\n";
+        cout << "NIK            : " << data[i].NIK << "\n";
+        cout << "Gender         : " << (data[i].gender == 'L' ? "Laki-laki" : "Perempuan") << "\n";
+        cout << "Telepon        : " << data[i].noTelepon << "\n";
+        cout << "PTKP           : " << data[i].PTKP << "\n";
+        cout << "Status Kawin   : " << (data[i].statusKawin ? "aktif" : "tidak aktif") << "\n";
+        cout << "Wajib Pajak    : " << (data[i].statusWajibPajak ? "aktif" : "tidak aktif") << "\n";
+        cout << "Alamat         : " << data[i].alamat << "\n";
+        cout << string(30, '-') << "\n";
+
+        if ((i + 1) % perPage == 0 && i + 1 != data.size()) {
+            char lanjut;
+            cout << "Tampilkan data berikutnya? (y/n): ";
+            cin >> lanjut;
+            cin.ignore();
+            if (lanjut != 'y' && lanjut != 'Y') {
+                cout << "Pengambilan data dihentikan.\n";
+                break;
+            }
+        }
+        else if(i == data.size()){
+            system("pause");
+        }
+    }
+}
+
+void urutkanDanTampilkan() {
+    vector<NPWPTempt> data = pullNPWP();
+
+    cout << "Urutkan berdasarkan:\n";
+    cout << "1. Nama\n2. NPWP\n3. NIK\nPilihan: ";
+    int pilihan;
+    cin >> pilihan;
+
+    string key = (pilihan == 1) ? "nama" : (pilihan == 2) ? "npwp" : "nik";
+
+    quickSortNPWP(data, 0, data.size() - 1, key);
+
+    lihatsemuadata(data);  // tampilkan data yang sudah diurutkan
+}
+
 
 void adminMenu() {
     char choice;
@@ -1385,6 +1483,8 @@ void adminMenu() {
         clearScreen();
         cout << "\n=== MENU ADMIN ===" << endl;
         cout << "1. Akun admin Menu" << endl;
+        cout << "2. Lihat semua Data" << endl;
+        cout << "3. Cari Data" << endl;
         cout << "0. Logout" << endl;
         cout << "Pilihan: "; cin >> choice;
         cin.ignore();
@@ -1394,10 +1494,13 @@ void adminMenu() {
                 AkunAdmin();
                 break;
             case '2':
-
+                urutkanDanTampilkan();
+                break;
+            case '3':
+                caridata();
+                break;
             case '0':
                 adminMode = false;
-                cout << "Logout berhasil.\n";
                 return;
 
             default:
@@ -1413,8 +1516,7 @@ int main() {
     char pilihan;
     adminlist = loadDadmin();
     //#admin mode
-    addAdmin();
-    
+
     while(pilihan != '3'){
         clearScreen();
         cout << setfill('-') << setw(30) << "" << setfill(' ') << endl;
