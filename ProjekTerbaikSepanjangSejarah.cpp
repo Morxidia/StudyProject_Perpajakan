@@ -1235,53 +1235,60 @@ void forgetPassword(){
 }
 
 void UpdateAdmin() {
-clearScreen();
-string username, password;
-cout << "Pastikan ini anda " << n << endl;
-cout << "Username\t: ";
-cin >> username;
+    clearScreen();
+    string username, password;
+    cout << "Pastikan ini anda " << n << endl;
+    cout << "Username\t: ";
+    cin >> username;
 
-bool found = false;
-int index = -1;
+    bool found = false;
+    int index = -1;
 
-for (int i = 0; i < adminlist.size(); i++) {
-    if (adminlist[i].username == username && u == username) {
-        cout << "Password\t: ";
-        password = maskedInput();
+    for (int i = 0; i < adminlist.size(); i++) {
+        if (adminlist[i].username == username && u == username) {
+            cout << "Password\t: ";
+            password = maskedInput();
 
-        if (adminlist[i].password == password) {
-            found = true;
-            index = i;
-        } else {
-            cout << "Password salah!\n";
+            if (adminlist[i].password == password) {
+                found = true;
+                index = i;
+            } else {
+                cout << "Password salah!\n";
+                getchar();
+                return;
+            }
+            break;
+        } else if (adminlist[i].username == username && u != username) {
+            cout << "Anda hanya boleh mengubah akun anda sendiri.\n";
+            cin.ignore();
+            cin.get();
             return;
         }
-        break; 
-    } 
+    }
 
-    else if (adminlist[i].username == username && u != username) {
-        cout << "Anda hanya boleh mengubah akun anda sendiri\n";
+    if (!found) {
+        cout << "Admin tidak ditemukan atau password salah.\n";
+        getchar();
         return;
     }
-}
 
-if (!found) {
-    cout << "Admin tidak ditemukan atau password salah.\n";
-    return;
-}
-
+    cin.ignore(); 
     string newName, newUser, newPass;
 
     cout << "Nama Baru\t: ";
     getline(cin, newName);
-    for (int i = 0; i < adminlist.size(); ++i) {
-    if (i != index && adminlist[i].username == newUser) {
-        cout << "Username baru sudah digunakan admin lain.\n";
-        return;
-    }
-}
+
     cout << "Username Baru\t: ";
     getline(cin, newUser);
+
+    for (int i = 0; i < adminlist.size(); ++i) {
+        if (i != index && adminlist[i].username == newUser) {
+            cout << "Username baru sudah digunakan admin lain.\n";
+            getchar();
+            return;
+        }
+    }
+
     cout << "Password Baru\t: ";
     newPass = maskedInput();
 
@@ -1479,7 +1486,7 @@ void adminMenu() {
     char choice;
     do {
         clearScreen();
-        cout << "\n=== MENU ADMIN ===" << endl;
+        cout << "=== MENU ADMIN ===" << endl;
         cout << "1. Akun admin Menu" << endl;
         cout << "2. Lihat semua Data" << endl;
         cout << "3. Cari Data" << endl;
