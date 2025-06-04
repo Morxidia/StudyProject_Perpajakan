@@ -1261,14 +1261,14 @@ void UpdateAdmin() {
         } else if (adminlist[i].username == username && u != username) {
             cout << "Anda hanya boleh mengubah akun anda sendiri.\n";
             cin.ignore();
-            cin.get();
+            system("pause");
             return;
         }
     }
 
     if (!found) {
         cout << "Admin tidak ditemukan atau password salah.\n";
-        getchar();
+        system("pause");
         return;
     }
 
