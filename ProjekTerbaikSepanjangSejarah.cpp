@@ -1239,7 +1239,7 @@ void UpdateAdmin() {
     string username, password;
     cout << "Pastikan ini anda " << n << endl;
     cout << "Username\t: ";
-    cin >> username;
+    getline(cin, username);
 
     bool found = false;
     int index = -1;
@@ -1260,15 +1260,14 @@ void UpdateAdmin() {
             break;
         } else if (adminlist[i].username == username && u != username) {
             cout << "Anda hanya boleh mengubah akun anda sendiri.\n";
-            cin.ignore();
-            system("pause");
+            getchar();
             return;
         }
     }
 
     if (!found) {
         cout << "Admin tidak ditemukan atau password salah.\n";
-        system("pause");
+        getchar();
         return;
     }
 
