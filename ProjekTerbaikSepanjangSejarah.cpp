@@ -1240,6 +1240,7 @@ void UpdateAdmin() {
     cout << "Pastikan ini anda " << n << endl;
     cout << "Username\t: ";
     cin >> username;
+    cin.ignore();
 
     bool found = false;
     int index = -1;
@@ -1260,8 +1261,7 @@ void UpdateAdmin() {
             break;
         } else if (adminlist[i].username == username && u != username) {
             cout << "Anda hanya boleh mengubah akun anda sendiri.\n";
-            cin.ignore();
-            cin.get();
+            getchar();
             return;
         }
     }
