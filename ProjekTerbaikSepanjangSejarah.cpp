@@ -1239,8 +1239,7 @@ void UpdateAdmin() {
     string username, password;
     cout << "Pastikan ini anda " << n << endl;
     cout << "Username\t: ";
-    cin >> username;
-    cin.ignore();
+    getline(cin, username);
 
     bool found = false;
     int index = -1;
