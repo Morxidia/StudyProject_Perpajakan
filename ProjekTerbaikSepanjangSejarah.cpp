@@ -1456,10 +1456,11 @@ void lihatsemuadata(vector<NPWPTempt> &data) {
             cin.ignore();
             if (lanjut != 'y' && lanjut != 'Y') {
                 cout << "Pengambilan data dihentikan.\n";
+                system("pause");
                 break;
             }
         }
-        else if(i == data.size()){
+        else if(i == data.size()-1){
             system("pause");
         }
     }
@@ -1509,6 +1510,7 @@ void adminMenu() {
 
             default:
                 cout << "Pilihan tidak valid.\n";
+                getchar();
         }
     } while (true);
 }
